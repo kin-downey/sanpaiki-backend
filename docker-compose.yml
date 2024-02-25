@@ -1,0 +1,28 @@
+version: '3'
+services:
+  app:
+    tty: true
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/db:/var/lib/mysql
+    env_file:
+      - .env
